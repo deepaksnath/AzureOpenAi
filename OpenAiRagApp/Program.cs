@@ -12,5 +12,8 @@ IConfiguration config = new ConfigurationBuilder()
 
 var settings = config.GetSection("AzureAiSettings").Get<AzureAiSettings>();
 
-SemanticSearchService semanticSearchService = new(settings);
-await semanticSearchService.RunSearch();
+if(settings is not null)
+{
+        SemanticSearchService semanticSearchService = new(settings);
+        await semanticSearchService.RunSearch();
+}
