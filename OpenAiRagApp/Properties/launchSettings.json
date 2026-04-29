@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "OpenAiRagApp": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
