@@ -2,19 +2,19 @@
   "profiles": {
     "OpenAiRagApp": {
       "commandName": "Project",
-      "commandLineArgs": "chat 0",
+      "commandLineArgs": "rag 0",
       "environmentVariables": {
         "APP_ACTION": "Chat",
-        "APP_SEED": "1",
+        "APP_SEED": "0",
         "CHAT_MODE": "Streaming"
       }
     },
     "Container (Dockerfile)": {
       "commandName": "Docker",
-      "commandLineArgs": "rag 0",
+      "commandLineArgs": "chat 0",
       "environmentVariables": {
         "APP_ACTION": "Chat",
-        "APP_SEED": "1",
+        "APP_SEED": "0",
         "CHAT_MODE": "Non-Streaming"
       }
     }
