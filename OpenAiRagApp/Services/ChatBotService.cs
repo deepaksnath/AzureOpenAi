@@ -38,6 +38,7 @@ namespace OpenAiRagApp.Services
         public async Task FreeChatAsync()
         {
             Console.WriteLine("Chat bot Ready (type '0' to quit)");
+            string chatMode = Environment.GetEnvironmentVariable("CHAT_MODE") ?? "";
 
             while (true)
             {
@@ -63,11 +64,16 @@ namespace OpenAiRagApp.Services
                                 ChatMessage.CreateUserMessage(query)
                            };
 
-                    //For streaming response
-                    await FreeStreamChatAsync(chatClient, options, messages);
-
-                    //For non-streaming response
-                    //await FreeNonStreamChatAsync(chatClient, options, messages);
+                    if (chatMode == "Non-Streaming")
+                    {
+                        //For non-streaming response
+                        await FreeNonStreamChatAsync(chatClient, options, messages);
+                    }
+                    else
+                    {
+                        //For streaming response
+                        await FreeStreamChatAsync(chatClient, options, messages);
+                    }
                 }
             }
         }

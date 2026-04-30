@@ -15,9 +15,9 @@ namespace OpenAiRagApp.Services
             await UploadDocumentsAsync();
         }
 
-        public async Task FreeSemanticSerachAsync()
+        public async Task FreeSemanticSearchAsync()
         {
-            Console.WriteLine("Sematic search Ready (type '0' to quit)");
+            Console.WriteLine("Semantic search Ready (type '0' to quit)");
 
             while (true)
             {
