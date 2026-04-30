@@ -38,6 +38,7 @@ namespace OpenAiRagApp.Services
         public async Task FreeChatAsync()
         {
             Console.WriteLine("Chat bot Ready (type '0' to quit)");
+            string chatMode = Environment.GetEnvironmentVariable("CHAT_MODE") ?? "";
 
             while (true)
             {
@@ -50,24 +51,29 @@ namespace OpenAiRagApp.Services
                     var chatClient = client.GetChatClient(settings.Value.ChatModelDeployment);
 
                     var options = new ChatCompletionOptions()
-                    {
-                        Temperature = 0.5f,
-                        FrequencyPenalty = 0f,
-                        PresencePenalty = 0f
-                    };
+                                  {
+                                      Temperature = 0.5f,
+                                      FrequencyPenalty = 0f,
+                                      PresencePenalty = 0f
+                                  };
                     var messages = new List<ChatMessage>
-                           {
-                                ChatMessage.CreateSystemMessage(
-                                    "You are an AI assistant that helps users get accurate information. All responses in 50 words only."),
+                                   {
+                                        ChatMessage.CreateSystemMessage(
+                                            "You are an AI assistant that helps users get accurate information. All responses in 50 words only."),
 
-                                ChatMessage.CreateUserMessage(query)
-                           };
+                                        ChatMessage.CreateUserMessage(query)
+                                   };
 
-                    //For streaming response
-                    await FreeStreamChatAsync(chatClient, options, messages);
-
-                    //For non-streaming response
-                    //await FreeNonStreamChatAsync(chatClient, options, messages);
+                    if (chatMode == "Non-Streaming")
+                    {
+                        //For non-streaming response
+                        await FreeNonStreamChatAsync(chatClient, options, messages);
+                    }
+                    else  
+                    {
+                        //For streaming response
+                        await FreeStreamChatAsync(chatClient, options, messages);
+                    }
                 }
             }
         }
@@ -76,7 +82,7 @@ namespace OpenAiRagApp.Services
         {           
             var updates = chatClient.CompleteChatStreamingAsync(messages, options);
 
-            Console.Write("AI: ");
+            Console.WriteLine("\nAI: ");
 
             await foreach (StreamingChatCompletionUpdate update in updates)
             {

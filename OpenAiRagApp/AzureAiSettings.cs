@@ -4,7 +4,7 @@ namespace OpenAiRagApp
 {
     internal class AzureAiSettings
     {
-        public const string SectionName = "AzureAiSettings";
+        public const string SectionName = "AzureOpenAiSettings";
 
         [Required, Url]
         public string AzureOpenAiEndpoint { get; set; } = string.Empty;
