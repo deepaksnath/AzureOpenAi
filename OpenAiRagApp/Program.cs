@@ -12,44 +12,53 @@ namespace OpenAiRagApp
     {
         static async Task Main(string[] args)
         {
-            var builder = new ConfigurationBuilder()
-                          .SetBasePath(Directory.GetCurrentDirectory())
-                          .AddJsonFile("appsettings.json", optional: false)
-                          .Build();
+            try
+            {
+                var builder = new ConfigurationBuilder()
+                              .SetBasePath(Directory.GetCurrentDirectory())
+                              .AddJsonFile("appsettings.json", optional: false)
+                              .Build();
 
-            var services = new ServiceCollection();
+                var services = new ServiceCollection();
 
-            services.AddOptions<AzureAiSettings>()
-                    .Bind(builder.GetSection("AzureAiSettings"))
-                    .ValidateDataAnnotations()
-                    .ValidateOnStart();
+                services.AddOptions<AzureAiSettings>()
+                        .Bind(builder.GetSection("AzureAiSettings"))
+                        .ValidateDataAnnotations()
+                        .ValidateOnStart();
 
-            services.AddSingleton(sp => {
-                var s = sp.GetRequiredService<IOptions<AzureAiSettings>>().Value;
-                return new SearchClient(new Uri(s.SearchEndpoint), 
-                                        s.SearchIndexName, 
-                                        new AzureKeyCredential(s.SearchApiKey));
-            });
+                services.AddSingleton(sp =>
+                {
+                    var s = sp.GetRequiredService<IOptions<AzureAiSettings>>().Value;
+                    return new SearchClient(new Uri(s.SearchEndpoint),
+                                            s.SearchIndexName,
+                                            new AzureKeyCredential(s.SearchApiKey));
+                });
 
-            services.AddSingleton(sp => {
-                var s = sp.GetRequiredService<IOptions<AzureAiSettings>>().Value;
-                return new AzureOpenAIClient(new Uri(s.AzureOpenAiEndpoint), 
-                                             new AzureKeyCredential(s.AzureOpenAiApiKey));
-            });
+                services.AddSingleton(sp =>
+                {
+                    var s = sp.GetRequiredService<IOptions<AzureAiSettings>>().Value;
+                    return new AzureOpenAIClient(new Uri(s.AzureOpenAiEndpoint),
+                                                 new AzureKeyCredential(s.AzureOpenAiApiKey));
+                });
 
-            services.AddTransient<ISemanticSearchService, SemanticSearchService>();
-            services.AddTransient<IRagHandlerService, RagHandlerService>();
-            services.AddTransient<IChatBotService, ChatBotService>();
-            services.AddTransient<ConsoleApp>();
+                services.AddTransient<ISemanticSearchService, SemanticSearchService>();
+                services.AddTransient<IRagHandlerService, RagHandlerService>();
+                services.AddTransient<IChatBotService, ChatBotService>();
+                services.AddTransient<ConsoleApp>();
 
-            var serviceProvider = services.BuildServiceProvider();
+                var serviceProvider = services.BuildServiceProvider();
 
-            //Only for seeding data to search index for demo purpose. Comment this when not needed.
-            //var searchService = serviceProvider.GetRequiredService<ISemanticSearchService>();
-            //await searchService.InitializeUploadAsync();
+                //Only for seeding data to search index for demo purpose. Comment this when not needed.
+                //var searchService = serviceProvider.GetRequiredService<ISemanticSearchService>();
+                //await searchService.InitializeUploadAsync();
 
-            var app = serviceProvider.GetRequiredService<ConsoleApp>();
-            await app.Run();
+                var app = serviceProvider.GetRequiredService<ConsoleApp>();
+                await app.Run();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+            }
         }
     }
 
