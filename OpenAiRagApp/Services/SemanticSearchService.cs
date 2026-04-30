@@ -31,6 +31,8 @@ namespace OpenAiRagApp.Services
 
                     var docs = await SearchDocumentsAsync(searchClient, queryEmbedding);
 
+                    Console.WriteLine("\nAI: ");
+
                     foreach (string result in docs)
                     {
                         Console.WriteLine(result);
