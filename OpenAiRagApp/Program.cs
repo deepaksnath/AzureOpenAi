@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using OpenAiRagApp.Extensions;
-using static OpenAiRagApp.Extensions.Constants;
 
 namespace OpenAiRagApp
 {
@@ -10,7 +9,7 @@ namespace OpenAiRagApp
         {
             try
             {
-                if (ValidateArguments(args, out string action, out bool isSeedingNeeded))
+                if (ArgumentsValidator.ValidateArguments(args, out string action, out bool isSeedingNeeded))
                 {
                     Console.WriteLine("Engine started...");
                     Console.WriteLine($"Mode: {action}, Seeding: {isSeedingNeeded}");
@@ -33,20 +32,6 @@ namespace OpenAiRagApp
             {
                 Console.WriteLine($"An error occurred: {ex.Message}");
             }
-        }
-
-        private static bool ValidateArguments(string[] args, out string action, out bool isSeedingNeeded)
-        {
-            string firstArg = args?.Length > 0 ? args[0] : string.Empty;
-
-            if (Enum.TryParse(firstArg, true, out Mode mode))
-                action = mode.ToString();
-            else
-                action = Mode.INVALID.ToString();
-
-            isSeedingNeeded = args?.Length > 1 && args[1] == "1";
-
-            return action != Mode.INVALID.ToString();
-        }
+        }        
     }
 }
