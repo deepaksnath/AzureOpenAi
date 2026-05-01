@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using OpenAiRagApp.Extensions;
-using OpenAiRagApp.Services;
 using static OpenAiRagApp.Extensions.Constants;
 
 namespace OpenAiRagApp
@@ -15,22 +14,13 @@ namespace OpenAiRagApp
                 {
                     Console.WriteLine("Engine started...");
                     Console.WriteLine($"Mode: {action}, Seeding: {isSeedingNeeded}");
-
-                    
+                                        
                     var services = new ServiceCollection();
                     services.RegisterServices();
 
                     var serviceProvider = services.BuildServiceProvider();
-
-                    if (isSeedingNeeded)
-                    {
-                        //Only for seeding data to search index for demo purpose.
-                        var searchService = serviceProvider.GetRequiredService<ISemanticSearchService>();
-                        await searchService.InitializeUploadAsync();
-                    }
-
                     var app = serviceProvider.GetRequiredService<OpenAiApp>();
-                    await app.Run(action);
+                    await app.Run(action, isSeedingNeeded);
                 }
                 else
                 {
