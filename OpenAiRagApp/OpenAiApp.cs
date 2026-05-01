@@ -7,8 +7,15 @@ namespace OpenAiRagApp
                              IChatBotService _chatBotService,
                              ISemanticSearchService _semanticSearchService)
     {
-        public async Task Run(string action)
+        public async Task Run(string action, bool isSeedingNeeded)
         {
+
+            if (isSeedingNeeded)
+            {
+                //Only for seeding data to search index for demo purpose.
+                await _semanticSearchService.InitializeUploadAsync();
+            }
+
             Task task = action switch
             {
                 //For free chat without RAG, which means the question will be directly sent to
