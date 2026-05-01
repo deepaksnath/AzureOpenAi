@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OpenAiRagApp.Services;
+using static OpenAiRagApp.Constants;
 
 namespace OpenAiRagApp
 {
@@ -49,18 +50,18 @@ namespace OpenAiRagApp
                     services.AddTransient<ISemanticSearchService, SemanticSearchService>();
                     services.AddTransient<IRagHandlerService, RagHandlerService>();
                     services.AddTransient<IChatBotService, ChatBotService>();
-                    services.AddTransient<ConsoleApp>();
+                    services.AddTransient<OpenAiApp>();
 
                     var serviceProvider = services.BuildServiceProvider();
 
                     if (isSeedingNeeded)
                     {
-                        //Only for seeding data to search index for demo purpose. Comment this when not needed.
+                        //Only for seeding data to search index for demo purpose.
                         var searchService = serviceProvider.GetRequiredService<ISemanticSearchService>();
                         await searchService.InitializeUploadAsync();
                     }
 
-                    var app = serviceProvider.GetRequiredService<ConsoleApp>();
+                    var app = serviceProvider.GetRequiredService<OpenAiApp>();
                     await app.Run(action);
                 }
                 else
@@ -78,48 +79,20 @@ namespace OpenAiRagApp
 
         private static bool ValidateArguments(string[] args, out string action, out bool isSeedingNeeded)
         {
-            action = args[0].ToLower() switch
+            string firstArg = args?.Length > 0 ? args[0] : string.Empty;
+
+            if (Enum.TryParse(firstArg, true, out Mode mode))
             {
-                "chat"   => "Chat",
-                "search" => "Search",
-                "rag"    => "RAG",
-                _        => "Invalid"
-            };
-            isSeedingNeeded = args[1] switch
+                action = mode.ToString();
+            }
+            else
             {
-                "1" => true,
-                _   => false
-            };
-            return action != "Invalid";
+                action = Mode.INVALID.ToString();
+            }
+
+            isSeedingNeeded = args?.Length > 1 && args[1] == "1";
+
+            return action != Mode.INVALID.ToString();
         }
     }
-
-    internal class ConsoleApp(IRagHandlerService _ragHandlerService,
-                              IChatBotService _chatBotService,
-                              ISemanticSearchService _semanticSearchService)
-    {
-        public async Task Run(string action)
-        {
-            Task task = action switch
-            {
-                //For free chat without RAG, which means the question will be directly sent to
-                //Azure OpenAI without using the retrieved information from semantic search.
-                "Chat"   => _chatBotService.FreeChatAsync(),
-
-                //For free semantic search, which means you can test and see the retrieved information
-                //from semantic search based on your query without sending it to Azure OpenAI.
-                "Search" => _semanticSearchService.FreeSemanticSearchAsync(),
-
-                //For complete RAG demo, which includes semantic search
-                //and then using the retrieved information to answer the question.
-                "RAG"    => _ragHandlerService.RunRagHandlerAsync(),
-
-                _        => Task.Run(() => Console.WriteLine("Invalid mode. Please choose Chat, Search, or RAG."))
-            };
-
-            await task;
-        }
-    }
-
-
 }
