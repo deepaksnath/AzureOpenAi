@@ -1,11 +1,7 @@
-﻿using Azure;
-using Azure.AI.OpenAI;
-using Azure.Search.Documents;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.DependencyInjection;
+using OpenAiRagApp.Extensions;
 using OpenAiRagApp.Services;
-using static OpenAiRagApp.Constants;
+using static OpenAiRagApp.Extensions.Constants;
 
 namespace OpenAiRagApp
 {
@@ -20,37 +16,9 @@ namespace OpenAiRagApp
                     Console.WriteLine("Engine started...");
                     Console.WriteLine($"Mode: {action}, Seeding: {isSeedingNeeded}");
 
-                    var builder = new ConfigurationBuilder()
-                                  .SetBasePath(Directory.GetCurrentDirectory())
-                                  .AddJsonFile("appsettings.json", optional: false)
-                                  .Build();
-
-                    var services = new ServiceCollection();
                     
-                    services.AddOptions<AzureAiSettings>()
-                            .Bind(builder.GetSection("AzureAiSettings"))
-                            .ValidateDataAnnotations()
-                            .ValidateOnStart();
-
-                    services.AddSingleton(sp =>
-                    {
-                        var s = sp.GetRequiredService<IOptions<AzureAiSettings>>().Value;
-                        return new SearchClient(new Uri(s.SearchEndpoint),
-                                                s.SearchIndexName,
-                                                new AzureKeyCredential(s.SearchApiKey));
-                    });
-
-                    services.AddSingleton(sp =>
-                    {
-                        var s = sp.GetRequiredService<IOptions<AzureAiSettings>>().Value;
-                        return new AzureOpenAIClient(new Uri(s.AzureOpenAiEndpoint),
-                                                     new AzureKeyCredential(s.AzureOpenAiApiKey));
-                    });
-
-                    services.AddTransient<ISemanticSearchService, SemanticSearchService>();
-                    services.AddTransient<IRagHandlerService, RagHandlerService>();
-                    services.AddTransient<IChatBotService, ChatBotService>();
-                    services.AddTransient<OpenAiApp>();
+                    var services = new ServiceCollection();
+                    services.RegisterServices();
 
                     var serviceProvider = services.BuildServiceProvider();
 
@@ -82,13 +50,9 @@ namespace OpenAiRagApp
             string firstArg = args?.Length > 0 ? args[0] : string.Empty;
 
             if (Enum.TryParse(firstArg, true, out Mode mode))
-            {
                 action = mode.ToString();
-            }
             else
-            {
                 action = Mode.INVALID.ToString();
-            }
 
             isSeedingNeeded = args?.Length > 1 && args[1] == "1";
 

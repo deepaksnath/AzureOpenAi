@@ -3,6 +3,7 @@ using Azure.Search.Documents;
 using Azure.Search.Documents.Models;
 using Microsoft.Extensions.Options;
 using OpenAI.Embeddings;
+using OpenAiRagApp.Extensions;
 
 namespace OpenAiRagApp.Services
 {

@@ -1,4 +1,4 @@
-﻿namespace OpenAiRagApp
+﻿namespace OpenAiRagApp.Extensions
 {
     public static class Constants
     {

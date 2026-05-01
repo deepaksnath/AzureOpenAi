@@ -1,5 +1,5 @@
 ﻿using OpenAiRagApp.Services;
-using static OpenAiRagApp.Constants;
+using static OpenAiRagApp.Extensions.Constants;
 
 namespace OpenAiRagApp
 {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace OpenAiRagApp
+namespace OpenAiRagApp.Extensions
 {
     internal class AzureAiSettings
     {

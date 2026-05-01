@@ -1,6 +1,7 @@
 ﻿using Azure.AI.OpenAI;
 using Microsoft.Extensions.Options;
 using OpenAI.Chat;
+using OpenAiRagApp.Extensions;
 
 namespace OpenAiRagApp.Services
 {
